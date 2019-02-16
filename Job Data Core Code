@@ -150,19 +150,20 @@ def DataFetcher(url1,url2,row,*args):
 ########################## Main Run Functions ########################################################################################################
             
 def TotalRun(df,carat):
-       carats = [carat(target=DataFetcher,args=(urls[0],urls[1],urls[2])) for urls in list(zip(*[df.Urls1.tolist(),df.Urls2.tolist(),list(df.index)]))]
-       tlen = len(carats)
-       for th in carats:
-           if threading.active_count() > 100:
-               while threading.active_count() > 50:
-                   num =1
-           th.start()
-       for th in carats:
-           th.join()
-       df.Jobs = [u[0] for u in sorted(joblist,key=lambda x:x[1])]
-       return df
+    global joblist
+    joblist=[]
+    carats = [carat(target=DataFetcher,args=(urls[0],urls[1],urls[2])) for urls in list(zip(*[df.Urls1.tolist(),df.Urls2.tolist(),list(df.index)]))]
+    tlen = len(carats)
+    for th in carats:
+       if threading.active_count() > 100:
+           while threading.active_count() > 50:
+               num =1
+       th.start()
+    for th in carats:
+       th.join()
+    df.Jobs = [u[0] for u in sorted(joblist,key=lambda x:x[1])]
+    return df
         
-       
 md = MainData = databuilder(header,mjob,salaries,cities,state,plist)
 dc = DataCollector()
 dr = DataRunner(dc)
